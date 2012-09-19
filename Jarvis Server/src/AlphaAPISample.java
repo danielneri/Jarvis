@@ -1,3 +1,11 @@
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
+
+import javazoom.jl.decoder.JavaLayerException;
+
+import com.gtranslate.Audio;
+import com.gtranslate.Language;
 import com.wolfram.alpha.WAEngine;
 import com.wolfram.alpha.WAException;
 import com.wolfram.alpha.WAPlainText;
@@ -42,10 +50,10 @@ public class AlphaAPISample {
     // PUT YOUR APPID HERE:
     private static String appid = "UGQX77-9QVY2H5VEH";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JavaLayerException {
 
         // Use "pi" as the default query, or caller can supply it as the lone command-line argument.
-        String input = "pi";
+        String input = "weather";
         if (args.length > 0)
             input = args[0];
         
@@ -88,7 +96,71 @@ public class AlphaAPISample {
                 System.out.println("Successful query. Pods follow:\n");
                 for (WAPod pod : queryResult.getPods()) {
                     if (!pod.isError()) {
+                    	System.out.println('l');
                     	System.out.println(pod.getID());
+                    	
+                    	if(pod.getID().equals("InstantaneousWeather:WeatherData"))
+                    		               
+                    	{
+                    		System.out.println("POD FOUND!");
+                    		Audio audio = Audio.getInstance();
+                    		InputStream sound;
+							
+								for (WASubpod subpod : pod.getSubpods()) {
+									
+									//System.out.println(subpod.getTitle());
+									
+									for (Object element : subpod
+											.getContents()) {
+
+										if (element instanceof WAPlainText) {
+											
+											String output = ((WAPlainText) element)
+													.getText();
+											output = output.replace("|","");
+											
+											Scanner scanner = new Scanner(output);
+											while (scanner.hasNextLine()) {
+											  String line = scanner.nextLine();
+											  System.out.println(line);
+											  try {
+												sound = audio.getAudio(line, Language.ENGLISH);
+												audio.play(sound);
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											  scanner.close();
+										      
+											  break;
+											  // process the line
+											}
+											
+											
+											
+											if(output.contains("temperature |"));
+											{	
+												System.out.println("GOIGN OUT");
+												//System.out.println(output);
+											}
+											
+											break;
+											
+										}
+									}
+									
+									break;
+									
+									
+									
+		                        }
+								
+								System.out.println("SOUND PLAYED-------");
+							
+							return;
+                    		
+                    	}
+                    	/*System.out.println(pod.getID());
                         System.out.println(pod.getTitle());
                         System.out.println("------------");
                         for (WASubpod subpod : pod.getSubpods()) {
@@ -98,7 +170,7 @@ public class AlphaAPISample {
                                     System.out.println("");
                                 }
                             }
-                        }
+                        }*/
                         System.out.println("");
                     }
                 }
